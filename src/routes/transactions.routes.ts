@@ -29,43 +29,10 @@ const transactionsRouter = Router();
 
 transactionsRouter.get('/', async (request, response) => {
   const transactionsRepository = getCustomRepository(TransactionsRepository)
-  const categoriesRepository = getRepository(Category)
-
-  const transactionsFromDatabase = await transactionsRepository.find()
+  
+  const transactions = await transactionsRepository.find()
   const balance = await transactionsRepository.getBalance()
-
-  const categories = await categoriesRepository.find()
-
-  let transactions:Transactions[] = []
-
-  transactionsFromDatabase.map(({
-    id,
-    title,
-    value,
-    type,
-    category_id,
-    created_at, 
-    updated_at
-  })=>{
-    const foundCategory = categories.find(({id})=>{
-      return id === category_id
-    })
-    transactions.push({
-      id,
-      title,
-      value,
-      type,
-      category:(foundCategory)?{
-        id:foundCategory.id,
-        title:foundCategory.title,
-        created_at:foundCategory.created_at,
-        updated_at:foundCategory.updated_at
-      }:null,
-      created_at, 
-      updated_at
-    })
-  })
-
+  
   return response.json({transactions, balance})
 });
 
